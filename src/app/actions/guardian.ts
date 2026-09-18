@@ -2,19 +2,18 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Usamos a chave mestre (service_role) para poder alterar dados de outros usuários
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export async function changeUserPassword(userId: string, newPassword: string) {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return { success: false, error: 'SUPABASE_SERVICE_ROLE_KEY não configurada' };
   }
 
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://fallback.supabase.co';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  const supabaseAdmin = createClient(url, key);
+
   try {
-    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
       password: newPassword,
     });
 
