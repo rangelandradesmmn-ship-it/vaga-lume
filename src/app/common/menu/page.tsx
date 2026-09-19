@@ -21,6 +21,8 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState<string>('GUARDIAN');
   const [showForm, setShowForm] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
 
   // Guardian Food Restrictions State
   const [childId, setChildId] = useState<string | null>(null);
@@ -40,8 +42,10 @@ export default function MenuPage() {
   });
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (isMounted) {
+      fetchData();
+    }
+  }, [isMounted]);
 
   async function fetchData() {
     setLoading(true);
@@ -57,8 +61,8 @@ export default function MenuPage() {
       }
     }
 
-    if (currentRole === 'GUARDIAN' || localStorage.getItem('vagalume_role') === 'GUARDIAN') {
-      let cid = localStorage.getItem('vagalume_child_id');
+    if (currentRole === 'GUARDIAN' || (isMounted && localStorage.getItem('vagalume_role') === 'GUARDIAN')) {
+      let cid = isMounted ? localStorage.getItem('vagalume_child_id') : null;
       if (!cid && user) {
         const { data: guardianData } = await supabase
           .from('guardians')

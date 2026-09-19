@@ -32,6 +32,9 @@ export default function Home() {
   const [hasNewMessage, setHasNewMessage] = useState(false);
   const router = useRouter();
   const [stats, setStats] = useState({ children: 0, guardians: 0, professionals: 0, menus: 0, invites: 0 });
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => setIsMounted(true), []);
 
   useEffect(() => {
     async function getUser() {
@@ -47,7 +50,7 @@ export default function Home() {
         .eq('id', user.id)
         .single();
         
-      if (typeof window !== 'undefined' && localStorage.getItem('vagalume_role') === 'GUARDIAN') {
+      if (isMounted && localStorage.getItem('vagalume_role') === 'GUARDIAN') {
         profileData.role = 'GUARDIAN';
       }
 
@@ -353,7 +356,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#fafafa] flex flex-col items-center">
       {/* Banner de Impersonation */}
-      {typeof window !== 'undefined' && localStorage.getItem('vagalume_role') && (
+      {isMounted && localStorage.getItem('vagalume_role') && (
         <div className="w-full bg-vaga-blue text-white text-center py-2 text-sm font-bold flex justify-center items-center gap-4">
           <span>👀 Visualizando aplicativo como Pais</span>
           <button 
